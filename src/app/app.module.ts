@@ -43,6 +43,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { baseURL } from './shared/baseurl';
 import { from } from 'rxjs';
+import { HighlightDirective } from './directives/highlight.directive';
 
 
 @NgModule({
@@ -55,7 +56,8 @@ import { from } from 'rxjs';
     AboutComponent,
     HomeComponent,
     ContactComponent,
-    LoginComponent
+    LoginComponent,
+    HighlightDirective
   ],
   imports: [
     BrowserModule,
