@@ -11,7 +11,8 @@ import { switchMap } from 'rxjs/operators';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { Console } from 'console';
 
-
+import { Comment } from '../shared/comment';
+import { from } from 'rxjs';
 
 @Component({
   selector: 'app-dishdetail',
@@ -27,6 +28,8 @@ export class DishdetailComponent implements OnInit {
 
   commentForm: FormGroup;
   comment: Comment;
+  
+  dishcopy: Dish;
 
   dish : Dish;
   errMess: string;
@@ -47,7 +50,7 @@ export class DishdetailComponent implements OnInit {
       'minlength':     'author Name must be at least 2 characters long.'
     },
     'comment': {
-      'required':      'comment Name is required.',
+      'required':      'comment is required.',
     },
   };
   
@@ -63,7 +66,7 @@ export class DishdetailComponent implements OnInit {
 
       this.dishservice.getDishIds().subscribe(dishIds => this.dishIds = dishIds);
       this.route.params.pipe(switchMap((params: Params) => this.dishservice.getDish(params['id'])))
-      .subscribe(dish => { this.dish = dish; this.setPrevNext(dish.id); },
+      .subscribe(dish => { this.dish = dish;  this.dishcopy = dish; this.setPrevNext(dish.id); },
       errmess => this.errMess = <any>errmess );
     }
 
@@ -109,16 +112,23 @@ export class DishdetailComponent implements OnInit {
     }
 
     onSubmit() {
-      this.commentForm.value.date = this.todayString;
-      this.dish.comments.push(this.commentForm.value);
+      // this.commentForm.value.date = this.todayString;
+      // this.dish.comments.push(this.commentForm.value);
       this.comment = this.commentForm.value;
+      this.comment.date = new Date().toISOString();
+      this.dishcopy.comments.push(this.comment);
+      this.dishservice.putDish(this.dishcopy)
+      .subscribe(dish => {
+        this.dish = dish; this.dishcopy = dish;
+      },
+      errmess => { this.dish = null; this.dishcopy = null; this.errMess = <any>errmess; });
       this.commentForm.reset({
         author: '',
-        rating: '',
+        rating: '5',
         comment: '',
         date:''
       });
-      this.commentFormDirective.resetForm({rating: 5});
+      // this.commentFormDirective.resetForm({rating: 5});
     }
 
   goBack(): void {
